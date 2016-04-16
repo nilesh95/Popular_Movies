@@ -15,6 +15,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 
 import com.android.volley.Request;
@@ -119,9 +121,11 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
 
                                 mAdapter = new MyAdapter(imglist);
                                 mRecyclerView.setAdapter(mAdapter);
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 isOnline();
+
                                 //Toast.makeText(getActivity(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -131,6 +135,7 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
                             isOnline();
+
                             //Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -254,11 +259,14 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                                     String release_date = jsonObject.getString("release_date");
                                     release_datelist.add(release_date);
                                 }
+
                                 mAdapter = new MyAdapter(imglist);
                                 mRecyclerView.setAdapter(mAdapter);
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 isOnline();
+
                                 //Toast.makeText(getActivity(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -268,6 +276,7 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
                             isOnline();
+
 
                             //Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
                         }
@@ -321,6 +330,7 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                                 public void onErrorResponse(VolleyError error) {
                                     error.printStackTrace();
                                     isOnline();
+
                                     //Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -383,7 +393,6 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
 
 
 
-
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(getActivity().SEARCH_SERVICE);
 
@@ -397,6 +406,14 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
 
         if(!searchView.isActivated())
         {
+            simglist.clear();
+            stitlelist.clear();
+            sback_imglist.clear();
+            splotlist.clear();
+            srelease_datelist.clear();
+            suser_ratinglist.clear();
+
+            Log.i("MainActivity", "s2");
             imglist.clear();
             titlelist.clear();
             back_imglist.clear();
@@ -429,11 +446,14 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                                     String release_date = jsonObject.getString("release_date");
                                     release_datelist.add(release_date);
                                 }
+
                                 mAdapter = new MyAdapter(imglist);
                                 mRecyclerView.setAdapter(mAdapter);
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 isOnline();
+
                                 //Toast.makeText(getActivity(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -443,6 +463,7 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
                             isOnline();
+
                             //Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -513,6 +534,14 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
 
                     @Override
                     public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+
+
+                        simglist.clear();
+                        stitlelist.clear();
+                        sback_imglist.clear();
+                        splotlist.clear();
+                        srelease_datelist.clear();
+                        suser_ratinglist.clear();
                         imglist.clear();
                         titlelist.clear();
                         back_imglist.clear();
@@ -545,11 +574,14 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                                                 String release_date = jsonObject.getString("release_date");
                                                 release_datelist.add(release_date);
                                             }
+
                                             mAdapter = new MyAdapter(imglist);
                                             mRecyclerView.setAdapter(mAdapter);
+
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                             isOnline();
+
                                             //Toast.makeText(getActivity(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -559,6 +591,7 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                                     public void onErrorResponse(VolleyError error) {
                                         error.printStackTrace();
                                         isOnline();
+
                                         //Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
                                     }
                                 });
@@ -592,6 +625,7 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
         query = query.replaceAll(" ", "%20");
 
 
+
         String url =  "http://api.themoviedb.org/3/search/movie?api_key="+API_KEY+"&query='"+query+"'";
 
 
@@ -622,16 +656,20 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                                 srelease_datelist.add(release_date);
                             }
                             if(simglist.size()!=0) {
+
                                 smAdapter = new MyAdapter(simglist);
                                 mRecyclerView.setAdapter(smAdapter);
+
                             }
                             else {
                                 onEmpty();
+
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                             onEmpty();
+
                             //Toast.makeText(getActivity(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -667,6 +705,8 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
         }
         else
         {
+
+            Log.i("MainActivity", "s5");
             imglist.clear();
             titlelist.clear();
             back_imglist.clear();
@@ -699,11 +739,14 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                                     String release_date = jsonObject.getString("release_date");
                                     release_datelist.add(release_date);
                                 }
+
                                 mAdapter = new MyAdapter(imglist);
                                 mRecyclerView.setAdapter(mAdapter);
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 isOnline();
+
                                 //Toast.makeText(getActivity(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -713,6 +756,7 @@ public class Popular extends Fragment implements SearchView.OnQueryTextListener{
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
                             isOnline();
+
                             //Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
                         }
                     });

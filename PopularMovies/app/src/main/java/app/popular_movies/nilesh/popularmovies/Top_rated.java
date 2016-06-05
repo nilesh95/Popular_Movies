@@ -7,6 +7,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -47,9 +49,14 @@ public class Top_rated extends Fragment {
     final ArrayList<String> plotlist = new ArrayList<String>();
     final ArrayList<String> user_ratinglist = new ArrayList<String>();
     final ArrayList<String> release_datelist = new ArrayList<String>();
+    ArrayList<String> genre = new ArrayList<String>();
+    ArrayList<Integer> popularity = new ArrayList<Integer>();
+    ArrayList<String> language = new ArrayList<String>();
+
+    final ArrayList<String> id_list = new ArrayList<String>();
     JazzyRecyclerViewScrollListener jazzyScrollListener;
     String API_KEY;
-
+    FragmentManager fm;
 
     public Top_rated() {
 
@@ -65,7 +72,7 @@ public class Top_rated extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_main, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
-
+        fm= getFragmentManager();
         mRecyclerView.setHasFixedSize(true);
         API_KEY=getActivity().getResources().getString(R.string.API_KEY);
         if (getResources().getConfiguration().orientation == 2) {
@@ -97,6 +104,12 @@ public class Top_rated extends Fragment {
                                     user_ratinglist.add(user_rating);
                                     String release_date = jsonObject.getString("release_date");
                                     release_datelist.add(release_date);
+                                    String id= jsonObject.getString("id");
+                                    id_list.add(id);
+                                    popularity.add(jsonObject.getInt("popularity"));
+                                    language.add(jsonObject.getString("original_language"));
+                                    JSONArray ja= jsonObject.getJSONArray("genre_ids");
+                                    genre.add(ja.getString(0));
                                 }
                                 mAdapter = new MyAdapter1(imglist);
                                 mRecyclerView.setAdapter(mAdapter);
@@ -148,6 +161,12 @@ public class Top_rated extends Fragment {
                                             user_ratinglist.add(user_rating);
                                             String release_date = jsonObject.getString("release_date");
                                             release_datelist.add(release_date);
+                                            String id= jsonObject.getString("id");
+                                            id_list.add(id);
+                                            popularity.add(jsonObject.getInt("popularity"));
+                                            language.add(jsonObject.getString("original_language"));
+                                            JSONArray ja= jsonObject.getJSONArray("genre_ids");
+                                            genre.add(ja.getString(0));
                                         }
                                         mAdapter.notifyItemInserted(imglist.size() - 1);
 
@@ -182,15 +201,42 @@ public class Top_rated extends Fragment {
                     new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
+                            boolean dual_pane = getResources().getBoolean(R.bool.dual_pane);
+                            if (dual_pane) {
+                                Tab_description tabletDetailFragment = new Tab_description();
+                                Bundle b1 = new Bundle();
 
-                            Intent intent = new Intent(getActivity(), Movie_description.class);
-                            intent.putExtra("title", titlelist.get(position));
-                            intent.putExtra("b_img", back_imglist.get(position));
-                            intent.putExtra("overview", plotlist.get(position));
-                            intent.putExtra("vote", user_ratinglist.get(position));
-                            intent.putExtra("r_date", release_datelist.get(position));
-                            intent.putExtra("p_img", imglist.get(position));
-                            startActivity(intent);
+
+                                b1.putString("title", titlelist.get(position));
+                                b1.putString("b_img", back_imglist.get(position));
+                                b1.putString("overview", plotlist.get(position));
+                                b1.putString("vote", user_ratinglist.get(position));
+                                b1.putString("r_date", release_datelist.get(position));
+                                b1.putString("p_img", imglist.get(position));
+                                b1.putString("id", id_list.get(position));
+                                b1.putString("genre", genre.get(position));
+                                b1.putInt("popularity", popularity.get(position));
+                                b1.putString("language", language.get(position));
+                                tabletDetailFragment.setArguments(b1);
+                                FragmentTransaction ft = fm.beginTransaction();
+                                ft.replace(R.id.details_frag, tabletDetailFragment);
+                                ft.commit();
+
+
+                            } else {
+                                Intent intent = new Intent(getActivity(), Movie_description.class);
+                                intent.putExtra("title", titlelist.get(position));
+                                intent.putExtra("b_img", back_imglist.get(position));
+                                intent.putExtra("overview", plotlist.get(position));
+                                intent.putExtra("vote", user_ratinglist.get(position));
+                                intent.putExtra("r_date", release_datelist.get(position));
+                                intent.putExtra("p_img", imglist.get(position));
+                                intent.putExtra("id", id_list.get(position));
+                                intent.putExtra("genre", genre.get(position));
+                                intent.putExtra("popularity", popularity.get(position));
+                                intent.putExtra("language", language.get(position));
+                                startActivity(intent);
+                            }
                         }
                     })
             );
@@ -224,6 +270,12 @@ public class Top_rated extends Fragment {
                                     user_ratinglist.add(user_rating);
                                     String release_date = jsonObject.getString("release_date");
                                     release_datelist.add(release_date);
+                                    String id= jsonObject.getString("id");
+                                    id_list.add(id);
+                                    popularity.add(jsonObject.getInt("popularity"));
+                                    language.add(jsonObject.getString("original_language"));
+                                    JSONArray ja= jsonObject.getJSONArray("genre_ids");
+                                    genre.add(ja.getString(0));
                                 }
                                 mAdapter = new MyAdapter1(imglist);
                                 mRecyclerView.setAdapter(mAdapter);
@@ -277,6 +329,12 @@ public class Top_rated extends Fragment {
                                             user_ratinglist.add(user_rating);
                                             String release_date = jsonObject.getString("release_date");
                                             release_datelist.add(release_date);
+                                            String id= jsonObject.getString("id");
+                                            id_list.add(id);
+                                            popularity.add(jsonObject.getInt("popularity"));
+                                            language.add(jsonObject.getString("original_language"));
+                                            JSONArray ja= jsonObject.getJSONArray("genre_ids");
+                                            genre.add(ja.getString(0));
                                         }
                                         mAdapter.notifyItemInserted(imglist.size() - 1);
 
@@ -311,15 +369,42 @@ public class Top_rated extends Fragment {
                     new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
+                            boolean dual_pane = getResources().getBoolean(R.bool.dual_pane);
+                            if (dual_pane) {
+                                Tab_description tabletDetailFragment = new Tab_description();
+                                Bundle b1 = new Bundle();
 
-                            Intent intent = new Intent(getActivity(), Movie_description.class);
-                            intent.putExtra("title", titlelist.get(position));
-                            intent.putExtra("b_img", back_imglist.get(position));
-                            intent.putExtra("overview", plotlist.get(position));
-                            intent.putExtra("vote", user_ratinglist.get(position));
-                            intent.putExtra("r_date", release_datelist.get(position));
-                            intent.putExtra("p_img", imglist.get(position));
-                            startActivity(intent);
+
+                                b1.putString("title", titlelist.get(position));
+                                b1.putString("b_img", back_imglist.get(position));
+                                b1.putString("overview", plotlist.get(position));
+                                b1.putString("vote", user_ratinglist.get(position));
+                                b1.putString("r_date", release_datelist.get(position));
+                                b1.putString("p_img", imglist.get(position));
+                                b1.putString("id", id_list.get(position));
+                                b1.putString("genre", genre.get(position));
+                                b1.putInt("popularity", popularity.get(position));
+                                b1.putString("language", language.get(position));
+                                tabletDetailFragment.setArguments(b1);
+                                FragmentTransaction ft = fm.beginTransaction();
+                                ft.replace(R.id.details_frag, tabletDetailFragment);
+                                ft.commit();
+
+
+                            } else {
+                                Intent intent = new Intent(getActivity(), Movie_description.class);
+                                intent.putExtra("title", titlelist.get(position));
+                                intent.putExtra("b_img", back_imglist.get(position));
+                                intent.putExtra("overview", plotlist.get(position));
+                                intent.putExtra("vote", user_ratinglist.get(position));
+                                intent.putExtra("r_date", release_datelist.get(position));
+                                intent.putExtra("p_img", imglist.get(position));
+                                intent.putExtra("id", id_list.get(position));
+                                intent.putExtra("genre", genre.get(position));
+                                intent.putExtra("popularity", popularity.get(position));
+                                intent.putExtra("language", language.get(position));
+                                startActivity(intent);
+                            }
                         }
                     })
             );
@@ -352,6 +437,10 @@ else
             plotlist.clear();
             user_ratinglist.clear();
             release_datelist.clear();
+            id_list.clear();
+            genre.clear();
+            language.clear();
+            popularity.clear();
             String url = "https://api.themoviedb.org/3/movie/top_rated?api_key="+API_KEY;
 
             JsonObjectRequest jsonRequest = new JsonObjectRequest
@@ -377,6 +466,12 @@ else
                                     user_ratinglist.add(user_rating);
                                     String release_date = jsonObject.getString("release_date");
                                     release_datelist.add(release_date);
+                                    String id= jsonObject.getString("id");
+                                    id_list.add(id);
+                                    popularity.add(jsonObject.getInt("popularity"));
+                                    language.add(jsonObject.getString("original_language"));
+                                    JSONArray ja= jsonObject.getJSONArray("genre_ids");
+                                    genre.add(ja.getString(0));
                                 }
                                 mAdapter = new MyAdapter(imglist);
                                 mRecyclerView.setAdapter(mAdapter);
@@ -426,6 +521,12 @@ else
                                             user_ratinglist.add(user_rating);
                                             String release_date = jsonObject.getString("release_date");
                                             release_datelist.add(release_date);
+                                            String id= jsonObject.getString("id");
+                                            id_list.add(id);
+                                            popularity.add(jsonObject.getInt("popularity"));
+                                            language.add(jsonObject.getString("original_language"));
+                                            JSONArray ja= jsonObject.getJSONArray("genre_ids");
+                                            genre.add(ja.getString(0));
                                         }
                                         mAdapter.notifyItemInserted(imglist.size() - 1);
 

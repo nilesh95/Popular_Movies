@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -17,10 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TabsActivity extends AppCompatActivity {
+public class TabsActivity extends AppCompatActivity implements Tab_description.RefreshGrid {
 
     SmartTabLayout viewPagerTab;
     private ViewPager viewPager;
+    FragmentManager fm;
+    ViewPagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,10 @@ public class TabsActivity extends AppCompatActivity {
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.title_1);
+        fm=getSupportFragmentManager();
+        if(getResources().getBoolean(R.bool.dual_pane)){
+            tabletView();
+        }
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -42,14 +49,28 @@ public class TabsActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new Popular(), "POPULAR");
         adapter.addFragment(new Top_rated(), "TOP RATED");
+        adapter.addFragment(new Favourite(), "FAVOURITE");
 
         viewPager.setAdapter(adapter);
     }
 
+    public void tabletView()
+    {
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.details_frag, new FragmentNone());
+        ft.commit();
+    }
 
+    @Override
+    public void refreshFavGrid() {
+        adapter.notifyDataSetChanged();
+    }
+    public interface UpdateableFragment {
+        public void update();
+    }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -77,6 +98,15 @@ public class TabsActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            if (object instanceof UpdateableFragment) {
+                ((UpdateableFragment) object).update();
+            }
+            //don't return POSITION_NONE, avoid fragment recreation.
+            return super.getItemPosition(object);
         }
     }
 

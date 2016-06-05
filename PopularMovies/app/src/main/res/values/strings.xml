@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="API_KEY"></string>
+    <string name="API_KEY">9f94a39b6560a8af818b87c24623137e</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
+   <string name="popularity">Popularity</string>
+    <string name="votes">Rating</string>
+    <string name="genre">Genre</string>
+    <string name="language">Language</string>
+    <string name="action_settings">Settings</string>
 </resources>

@@ -1,29 +1,23 @@
 package app.popular_movies.nilesh.popularmovies;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
-import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,24 +35,25 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import app.popular_movies.nilesh.popularmovies.Adapter.MyAdapter3;
 import app.popular_movies.nilesh.popularmovies.RealM.Movies_Fav;
-import app.popular_movies.nilesh.popularmovies.RecyclerItem.RecyclerItemClickListener;
 import app.popular_movies.nilesh.popularmovies.RecyclerItem.RecyclerItemClickListener2;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmList;
 import io.realm.RealmResults;
-import app.popular_movies.nilesh.popularmovies.Adapter.MyAdapter3;
 
-
-public class Movie_description extends AppCompatActivity {
+/**
+ * Created by NILESH on 05-06-2016.
+ */
+public class Tab_description extends Fragment {
     ImageView poster,title;
     TextView year,average,synopsis,mTrailer,mReview,moTitle,mAuthor,mText,tgenre,tpopularity,tlanguage,tvote;
     FloatingActionButton share,share_btn;
     String mTitle,mBackdrop_Image,mOverview,mVote,mRelease_Date,mPoster_Image,mId,mgenre,mlanguage;
     Integer mpopularity;
-Context context;
+    Context context;
 
+    View view;
     float rate;
     double d;
     ScrollView v;
@@ -79,32 +74,65 @@ Context context;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private LinearLayoutManager mLayoutManager;
+
+    RefreshGrid refreshGrid;
+    public interface RefreshGrid{
+        public void refreshFavGrid();
+    }
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof RefreshGrid) {
+            refreshGrid = (RefreshGrid) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implement MyListFragment.OnItemSelectedListener");
+        }
+    }
+
+
+
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scrolling);
-       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        context=this;
+        this.mTitle=getArguments().getString("title");
+        this.mBackdrop_Image=getArguments().getString("b_img");
+        this.mOverview=getArguments().getString("overview");
+        this.mVote=getArguments().getString("vote");
+        this.mRelease_Date=getArguments().getString("r_date");
+        this.mPoster_Image=getArguments().getString("p_img");
+        this.mId=getArguments().getString("id");
+        this.mgenre=getArguments().getString("genre");
+        this.mpopularity=getArguments().getInt("popularity");
+        this.mlanguage=getArguments().getString("language");
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view=inflater.inflate(R.layout.activity_scrolling, container, false);
+
+        context=getActivity();
         // Create a RealmConfiguration which is to locate Realm file in package's "files" directory.
         API_KEY=getResources().getString(R.string.API_KEY);
         realmConfig = new RealmConfiguration.Builder(context).deleteRealmIfMigrationNeeded().build();
         realm = Realm.getInstance(realmConfig);
-        poster= (ImageView) findViewById(R.id.poster);
-        year= (TextView) findViewById(R.id.year);
-        average= (TextView) findViewById(R.id.rating);
-        title= (ImageView) findViewById(R.id.imgBack);
-        synopsis= (TextView) findViewById(R.id.synopsis);
-        share= (FloatingActionButton) findViewById(R.id.fab);
-        share_btn= (FloatingActionButton) findViewById(R.id.fabshare);
-        mAuthor= (TextView) findViewById(R.id.review_author_text);
-        mText= (TextView) findViewById(R.id.review_text);
-        tgenre= (TextView) findViewById(R.id.genre_text);
-        tpopularity= (TextView) findViewById(R.id.popularity);
-        tlanguage= (TextView) findViewById(R.id.language);
-        tvote= (TextView) findViewById(R.id.rating);
-        ib= (ImageButton) findViewById(R.id.imgVideo);
+        poster= (ImageView) view.findViewById(R.id.poster);
+        year= (TextView) view.findViewById(R.id.year);
+        average= (TextView) view.findViewById(R.id.rating);
+        title= (ImageView) view.findViewById(R.id.imgBack);
+        synopsis= (TextView) view.findViewById(R.id.synopsis);
+        share= (FloatingActionButton) view.findViewById(R.id.fab);
+        share_btn= (FloatingActionButton) view.findViewById(R.id.fabshare);
+        mAuthor= (TextView) view.findViewById(R.id.review_author_text);
+        mText= (TextView) view.findViewById(R.id.review_text);
+        tgenre= (TextView) view.findViewById(R.id.genre_text);
+        tpopularity= (TextView) view.findViewById(R.id.popularity);
+        tlanguage= (TextView) view.findViewById(R.id.language);
+        tvote= (TextView) view.findViewById(R.id.rating);
+        ib= (ImageButton) view.findViewById(R.id.imgVideo);
 //        r= (RatingBar) findViewById(R.id.rating);
-        mRecyclerView= (RecyclerView) findViewById(R.id.recycler_movie_details);
+        mRecyclerView= (RecyclerView) view.findViewById(R.id.recycler_movie_details);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(context) {
             @Override
@@ -113,30 +141,16 @@ Context context;
             }
         };
         mRecyclerView.setLayoutManager(mLayoutManager);
-        moTitle= (TextView) findViewById(R.id.motitle);
-        v= (ScrollView) findViewById(R.id.sview);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
+        moTitle= (TextView) view.findViewById(R.id.motitle);
+        v= (ScrollView) view.findViewById(R.id.sview);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-
-           mTitle = extras.getString("title");
-           mBackdrop_Image =extras.getString("b_img");
-           mOverview = extras.getString("overview");
-           mVote = extras.getString("vote");
-            mRelease_Date = extras.getString("r_date");
-            mPoster_Image = extras.getString("p_img");
-            mId = extras.getString("id");
-            mgenre=extras.getString("genre");
-            mpopularity=extras.getInt("popularity");
-            mlanguage=extras.getString("language");
-        }
         toolbar.setTitle(mTitle);
-        Glide.with(getApplicationContext()).load(Uri.parse(mPoster_Image)).error(R.drawable.placeholder).into(poster);
-        Glide.with(getApplicationContext()).load(Uri.parse(mBackdrop_Image)).error(R.drawable.placeholder).into(title);
+      Glide.with(getActivity()).load(Uri.parse(mPoster_Image)).error(R.drawable.placeholder).into(poster);
+      Glide.with(getActivity()).load(Uri.parse(mBackdrop_Image)).error(R.drawable.placeholder).into(title);
         year.setText(mRelease_Date);
 //        average.setText(mVote);
         moTitle.setText(mTitle);
@@ -145,13 +159,13 @@ Context context;
         rate=(float)d;
         tvote.setText(String.valueOf(rate));
         if(mlanguage==null)
-            tlanguage.setText("NA");
+            tlanguage.setText("na");
         else
             tlanguage.setText(mlanguage);
         if(mpopularity==0)
             tpopularity.setText("NA");
         else
-        tpopularity.setText(String.valueOf(mpopularity));
+            tpopularity.setText(String.valueOf(mpopularity));
         fetchgenre();
         //r.setRating(rate / 2);
 
@@ -181,7 +195,7 @@ Context context;
             public void onClick(View v) {
                 realm.beginTransaction();
                 //m=realm.createObject(Movies_Fav.class);
-              //  Toast.makeText(getBaseContext(),String.valueOf(mf.getFav()),Toast.LENGTH_SHORT).show();
+                //  Toast.makeText(getBaseContext(),String.valueOf(mf.getFav()),Toast.LENGTH_SHORT).show();
                 if(mf.getFav()==0) {
                     realm.commitTransaction();
                     fetchdata1();
@@ -192,7 +206,8 @@ Context context;
                     realm.commitTransaction();
                     fetchdata2();
                 }
-
+                if (refreshGrid != null)
+                    refreshGrid.refreshFavGrid();
             }
         });
         share_btn.setOnClickListener(new View.OnClickListener() {
@@ -202,56 +217,58 @@ Context context;
                 sharingIntent.setType("text/plain");
                 String shareBody = "Here is the trailer";
                 sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mTitle);
-                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,mTitle+"     https://www.youtube.com/watch?v="+videokey.get(0));
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,mTitle+"    https://www.youtube.com/watch?v="+videokey.get(0));
                 startActivity(Intent.createChooser(sharingIntent, "Share via"));
             }
         });
 
         mRecyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener2(getApplicationContext(), new RecyclerItemClickListener2.OnItemClickListener() {
+                new RecyclerItemClickListener2(getActivity(), new RecyclerItemClickListener2.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
                         String video_path = "https://www.youtube.com/watch?v="+videokey.get(position);
-             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(video_path));
-              startActivity(intent);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(video_path));
+                        startActivity(intent);
 
                     }
-                    }
+                }
                 ));
-
+        return view;
     }
+
+
     public void fetchdata()
     {
         realm.beginTransaction();
-       // Movies_Fav m=realm.createObject(Movies_Fav.class);
+        // Movies_Fav m=realm.createObject(Movies_Fav.class);
         //a=m.getMovies_id();
         m=realm.createObject(Movies_Fav.class);
         RealmResults<Movies_Fav> result3 = realm.where(Movies_Fav.class).equalTo("id", mId).findAll();
-           if(result3.size()!=0)
-               mf=result3.first().getObject();
+        if(result3.size()!=0)
+            mf=result3.first().getObject();
         else
-           mf=m;
+            mf=m;
         if(mf.getFav()==0) {
-            share.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), android.R.drawable.btn_star_big_off));
+            share.setImageDrawable(ContextCompat.getDrawable(getActivity(), android.R.drawable.btn_star_big_off));
         }
 
 
         else if(mf.getFav()==1) {
-        share.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), android.R.drawable.btn_star_big_on));
-    }
+            share.setImageDrawable(ContextCompat.getDrawable(getActivity(), android.R.drawable.btn_star_big_on));
+        }
 
 
         realm.commitTransaction();
 
         //fetchdata();
-       // realm.cancelTransaction();
+        // realm.cancelTransaction();
 
 
     }
     void fetchdata1()
     {
         realm.beginTransaction();
-       // Movies_Fav m=realm.createObject(Movies_Fav.class);
+        // Movies_Fav m=realm.createObject(Movies_Fav.class);
         mf=realm.createObject(Movies_Fav.class);
         mf.setFav(1);
         mf.setId(mId);
@@ -265,9 +282,9 @@ Context context;
         mf.setGenre(mgenre);
         mf.setLanguage(mlanguage);
         mf.setPopularity(mpopularity);
-        share.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),android.R.drawable.btn_star_big_on));
+        share.setImageDrawable(ContextCompat.getDrawable(getActivity(),android.R.drawable.btn_star_big_on));
         realm.commitTransaction();
-      // new Favourite().fetchsData();
+        // new Favourite().fetchsData();
 
 
     }
@@ -275,7 +292,7 @@ Context context;
     {
         realm.beginTransaction();
 
-        share.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),android.R.drawable.btn_star_big_off));
+        share.setImageDrawable(ContextCompat.getDrawable(getActivity(),android.R.drawable.btn_star_big_off));
 
         RealmResults<Movies_Fav> result2 = realm.where(Movies_Fav.class).findAll();
         mf.deleteFromRealm();
@@ -292,7 +309,7 @@ Context context;
     public void fetchReview()
     {
         String url = "https://api.themoviedb.org/3/movie/"+mId+"/reviews?api_key="+API_KEY;
-        startAnim2();
+startAnim2();
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
@@ -316,7 +333,7 @@ Context context;
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -324,11 +341,11 @@ Context context;
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
                     }
                 });
 
-        Volley.newRequestQueue(getApplicationContext()).add(jsonRequest);
+        Volley.newRequestQueue(getActivity()).add(jsonRequest);
 
 
     }
@@ -370,7 +387,7 @@ startAnim();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Something went wrong!!please check your connection 111", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -378,43 +395,44 @@ startAnim();
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
                     }
                 });
 
-        Volley.newRequestQueue(getApplicationContext()).add(jsonRequest);
+        Volley.newRequestQueue(getActivity()).add(jsonRequest);
 
 
     }
 
     public void fetchgenre()
     {
-        String url = "https://api.themoviedb.org/3/genre/"+mgenre+"?api_key="+API_KEY;
+        if(mgenre!=null) {
+            String url = "https://api.themoviedb.org/3/genre/" + mgenre + "?api_key=" + API_KEY;
 
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest
-                (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // the response is already constructed as a JSONObject!
-                        try {
-                            tgenre.setText(response.getString("name"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "Something went wrong!!please check your connection ", Toast.LENGTH_SHORT).show();
+            JsonObjectRequest jsonRequest = new JsonObjectRequest
+                    (Request.Method.GET, url, (String) null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // the response is already constructed as a JSONObject!
+                            try {
+                                tgenre.setText(response.getString("name"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Toast.makeText(getActivity(), "Something went wrong!!please check your connection ", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                }, new Response.ErrorListener() {
+                    }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                            Toast.makeText(getActivity(), "Something went wrong!!please check your connection", Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-        Volley.newRequestQueue(getApplicationContext()).add(jsonRequest);
-
+            Volley.newRequestQueue(getActivity()).add(jsonRequest);
+        }
 
 
     }
@@ -423,7 +441,7 @@ startAnim();
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                getActivity().onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -431,21 +449,21 @@ startAnim();
     }
 
     void startAnim(){
-        findViewById(R.id.avloadingIndicatorView).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.avloadingIndicatorView).setVisibility(View.VISIBLE);
     }
 
     void stopAnim(){
-        findViewById(R.id.avloadingIndicatorView).setVisibility(View.GONE);
+        view.findViewById(R.id.avloadingIndicatorView).setVisibility(View.GONE);
     }
 
     void startAnim2(){
-        findViewById(R.id.avloadingIndicatorView2).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.avloadingIndicatorView2).setVisibility(View.VISIBLE);
     }
 
     void stopAnim2(){
-        findViewById(R.id.avloadingIndicatorView2).setVisibility(View.GONE);
+        view.findViewById(R.id.avloadingIndicatorView2).setVisibility(View.GONE);
     }
-
 }
+
 
 

@@ -56,7 +56,7 @@ public class Tab_description extends Fragment {
     View view;
     float rate;
     double d;
-    ScrollView v;
+
     String API_KEY;
     RealmConfiguration realmConfig;
     ImageButton ib;
@@ -142,7 +142,7 @@ public class Tab_description extends Fragment {
         };
         mRecyclerView.setLayoutManager(mLayoutManager);
         moTitle= (TextView) view.findViewById(R.id.motitle);
-        v= (ScrollView) view.findViewById(R.id.sview);
+
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 //       getSupportActionBar().setDisplayHomeAsUpEnabled(true);

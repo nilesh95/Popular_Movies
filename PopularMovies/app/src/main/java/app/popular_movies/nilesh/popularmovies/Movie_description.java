@@ -61,7 +61,7 @@ Context context;
 
     float rate;
     double d;
-    ScrollView v;
+
     String API_KEY;
     RealmConfiguration realmConfig;
     ImageButton ib;
@@ -114,7 +114,7 @@ Context context;
         };
         mRecyclerView.setLayoutManager(mLayoutManager);
         moTitle= (TextView) findViewById(R.id.motitle);
-        v= (ScrollView) findViewById(R.id.sview);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
